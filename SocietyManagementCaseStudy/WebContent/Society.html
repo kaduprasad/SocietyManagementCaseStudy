@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Table</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+  <link rel = "stylesheet"
+   type = "text/css"
+   href = "table.css" />
+</head>
+<div id = 1> </div><br>
+<body>
+<center>
+	<h1>Society</h1>
+	<hr>
+</center>
+<center class="center">
+	<form method="POST" class="form-group" action="http://localhost:8080/SocietyManagement/society">
+		<div class="form-group row">
+			<label class="col-sm-5 col-form-label">SocietyName</label>
+			<div class="col-sm-7">
+				<input class="input-group-text" name="Sname" id="Sname">
+			</div>
+		</div>
+		<div class="form-group row">
+			<label class="col-sm-5 col-form-label">NumberOfFlats</label>
+			<div class="col-sm-7">
+				<input class="input-group-text"  name="nof" id="nof">
+			</div>
+		</div>
+		<div class="form-group row">
+			<label class="col-sm-5 col-form-label">Address</label>
+			<div class="col-sm-7">
+				<input class="input-group-text"  name="Address" id="Address">
+			</div>
+		</div>
+		<div class="form-group row">
+			<div class="col-sm-12">
+				<input type="submit" name="button" id="btn" class="btn btn-success" value="Add" onclick="sendSocInfo()">
+			</div>
+			
+		</div>
+	</form>
+	
+</center>
+
+<centre class="showButton">
+	<button type="button" class="btn btn-success" onclick="loadDoc()">Show Table Of Societies</button>
+	<div id = "demo" style="margin-left:530px; margin-bottom:50px"></div>
+	<div id = "demo2" style="margin-left:530px; margin-bottom:50px"></div>
+</centre>
+
+<center class="center">
+	<form class="form-group">
+		<div class="form-group row">
+			<label class="col-md-5 col-form-label">SocietyName</label>
+			<div class="col-md-7">
+				<input class="input-group-text" name="socNameToBeDeleted" id="socNameToBeDeleted">
+			</div>
+		</div>
+		
+		<div class="form-group row">
+			<div class="col-sm-12">
+				<input type="submit" name="button" id="deleteSoc" class="btn btn-success" value="Delete" onclick="sendSocToBeDelete()">
+			</div>
+		</div>
+	</form>
+</center>
+
+
+<script>
+
+function addMember(socName){
+
+}
+
+function sendSocToBeDelete(){
+	var socString = document.getElementById("socNameToBeDeleted").value;
+	var xhttp = new XMLHttpRequest();
+	xhttp.open("DELETE", "http://localhost:8080/SocietyManagement/society", true);
+	
+	xhttp.onreadystatechange = function() {
+	  
+		if (this.readyState == 4 && this.status == 200) {
+			console.log(this.responseText);
+	    }
+    };
+	xhttp.send(socString);
+}
+
+function sendSocName(socName){
+	
+	var form = "<> ";
+	var soc = socName;
+	var xhttp = new XMLHttpRequest();
+	xhttp.open("POST","http://localhost:8080/SocietyManagement/Member.html",true);
+	xhttp.onreadystatechange = function() {
+	  
+		if (this.readyState == 4 && this.status == 200) {
+			console.log(this.responseText);
+	    }
+    };
+	xhttp.send(soc);
+}
+
+
+function getMemberTable(str){
+	var jsonObj = JSON.parse(str); // String will be converted to json Maw90491
+
+	var table = "<table border= 2><tr> <td>Member</td> <td>FlatNo</td> <td>SocName</td> </tr>";
+	for(i in jsonObj){
+	   var member = jsonObj[i];
+
+	   var tr = "<tr><td>"+member.Name+"</td>"+"<td>"+member.FlatNo+"</td>"+"<td>"+member.SocName+"</td></tr>" ;
+	   table = table + tr;
+	}
+	table = table  + "</table>";
+    document.getElementById("demo2").innerHTML = table;
+}
+	
+
+function showMemberListInSocTable(socName){
+
+	var xhttp = new XMLHttpRequest(); 
+	
+	xhttp.open("GET", "http://localhost:8080/SocietyManagement/member/"+socName, true);
+	xhttp.send();
+	// xhttp.send();
+	xhttp.onreadystatechange = function() {
+	  
+		if (this.readyState == 4 && this.status == 200) {
+			console.log(this.responseText);
+	   		getMemberTable(this.responseText);// it sends jsonString incoming from memberServlet doGet()
+	    }
+	};
+}
+
+function getSocTable(str){
+	var jsonObj = JSON.parse(str); // String will be converted to json
+
+	var table = "<table border= 2> <tr> <td>SocName</td> <td>NoOfFlats</td> <td>MemberOption</td> </tr>";
+	
+	for(i in jsonObj){
+	   var society = jsonObj[i];
+
+	   var tr = "<tr><td>"+society.Name+"</td>"+"<td>"+society.Flats+"</td>"+"<td><button type=\"submit\" onclick=\"showMemberListInSocTable('"+society.Name+"');\">ShowMembers</button></td></tr>";
+	   table = table + tr;
+	}
+	table = table + "</table>";
+    document.getElementById("demo").innerHTML = table;
+}
+
+function loadDoc(){
+	// var str = '[{"societyName":"prasad1","Flats":10},{"societyName":"prasad2","Flats":20},{"societyName":"prasad3","Flats":30}]';
+	
+	var xhttp = new XMLHttpRequest(); 
+	
+	xhttp.open("GET", "http://localhost:8080/SocietyManagement/society", true);
+	
+
+	xhttp.onreadystatechange = function() {
+	  
+		if (this.readyState == 4 && this.status == 200) {
+			console.log(this.responseText);
+	   		getSocTable(this.responseText);
+	    }
+	};
+
+	xhttp.send();
+}
+
+
+function sendSocInfo(){
+
+	var socString = document.getElementById("Sname").value+","+document.getElementById("nof").value+","+document.getElementById("Address").value;
+
+
+	var xhttp = new XMLHttpRequest(); 
+	
+	xhttp.open("POST", "http://localhost:8080/SocietyManagement/society", true);
+	
+	xhttp.onreadystatechange = function() {
+	  
+		if (this.readyState == 4 && this.status == 200) {
+			console.log(this.responseText);
+	    }
+    };
+	xhttp.send(socString);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Table</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+  <link rel = "stylesheet"
+   type = "text/css"
+   href = "table.css" />
+</head>
+<div id = 1> </div><br>
+<body>
+<center>
+	<h1>Member</h1>
+	<hr>
+</center>
+<center class="center">
+	<form method="POST" class="form-group" action="http://localhost:8080/SocietyManagement/member">
+		<div class="form-group row">
+			<label class="col-sm-3 col-form-label">MemberName</label>
+			<div class="col-sm-9">
+				<input class="input-group-text" name="Mname" id="Mname">
+			</div>
+		</div>
+		<div class="form-group row">
+			<label class="col-sm-3 col-form-label">FlatNo</label>
+			<div class="col-sm-9">
+				<input class="input-group-text" name="FlatNo" id="FlatNo">
+			</div>
+		</div>
+		<div class="form-group row">
+			<label class="col-sm-3 col-form-label">SocName</label>
+			<div class="col-sm-9">
+				<input class="input-group-text"  name="SocName" id="SocName">
+			</div>
+		</div>
+		<div class="form-group row">
+			<div class="col-sm-12">
+
+				<input type="submit" name="button" id="btn" class="btn btn-success" value="Add" onclick="sendSocInfo()">
+			</div>
+		</div>
+	</form>
+</center>
+
+<center class="center">
+	<form class="form-group">
+		<div class="form-group row">
+			<label class="col-md-5 col-form-label">MemberName</label>
+			<div class="col-md-7">
+				<input class="input-group-text" name="memberNameToBeDeleted" id="memberNameToBeDeleted">
+			</div>
+		</div>
+
+		<div class="form-group row">
+			<div class="col-sm-12">
+				<input type="submit" name="button" id="deleteMember" class="btn btn-success" value="Delete" onclick="sendMemberToBeDelete()">
+			</div>
+		</div>
+	</form>
+</center>
+
+<centre class="showButton">
+	<button type="button" class="btn btn-success" onclick="loadDoc()">Show Table Of Members</button>
+	<div id = "demo" style="margin-left:530px; margin-bottom:50px"></div>
+</centre>
+
+<script>
+
+function getTable(str){
+	var jsonObj = JSON.parse(str); // String will be converted to json Maw90491
+
+	var table = "<table border= 2><tr> <td>Member</td> <td>FlatNo</td> <td>SocName</td> </tr>";
+	for(i in jsonObj){
+	   var member = jsonObj[i];
+
+	   var tr = "<tr><td>"+member.Name+"</td>"+"<td>"+member.FlatNo+"</td>"+"<td>"+member.SocName+"</td></tr>" ;
+	   table = table + tr;
+	}
+	table = table  + "</table>";
+    document.getElementById("demo").innerHTML = table;
+}
+
+function sendMemberToBeDelete(){
+	var memberString = document.getElementById("memberNameToBeDeleted").value;
+	var xhttp = new XMLHttpRequest();
+	xhttp.open("DELETE", "http://localhost:8080/SocietyManagement/member", true);
+
+	xhttp.onreadystatechange = function() {
+
+		if (this.readyState == 4 && this.status == 200) {
+			console.log(this.responseText);
+	    }
+    };
+	xhttp.send(memberString);
+}
+
+function loadDoc(){
+	// var str = '[{"societyName":"prasad1","Flats":10},{"societyName":"prasad2","Flats":20},{"societyName":"prasad3","Flats":30}]';
+	
+	var xhttp = new XMLHttpRequest(); 
+	
+	xhttp.open("GET", "http://localhost:8080/SocietyManagement/member", true);
+	xhttp.send();
+
+	xhttp.onreadystatechange = function() {
+	  
+		if (this.readyState == 4 && this.status == 200) {
+			console.log(this.responseText);
+	   		getTable(this.responseText);
+	    }
+	};
+}
+
+function sendSocInfo(){
+
+	var memberString = document.getElementById("Mname").value+","+document.getElementById("FlatNo").value+","+document.getElementById("SocName").value;
+
+	var xhttp = new XMLHttpRequest();
+
+	xhttp.open("POST", "http://localhost:8080/SocietyManagement/member", true);
+	
+	xhttp.onreadystatechange = function() {
+	  
+		if (this.readyState == 4 && this.status == 200) {
+			console.log(this.responseText);
+	    }
+    };
+	xhttp.send(memberString);
+}
+</script>
+</body>
+</html>
